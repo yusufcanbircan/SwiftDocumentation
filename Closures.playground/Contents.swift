@@ -133,3 +133,28 @@ loadPicture(from: someServer) { picture in
     print("Couldn't download the next picture.")
 }
 
+
+// Capturing Values
+// A closure can capture constants and variables from the surrounding context in which it’s defined.
+
+func makeIncrementer(forIncrement amount: Int) -> () -> Int {
+    var runningTotal = 0
+    func incrementer() -> Int {
+        runningTotal += amount
+        return runningTotal
+    }
+    return incrementer
+}
+// The return type of makeIncrementer is () -> Int.
+// This means that it returns a function, rather than a simple value.
+
+let incrementByTen = makeIncrementer(forIncrement: 10)
+incrementByTen() // returns 10
+incrementByTen() // returns 20
+incrementByTen() // returns 30
+
+
+let incrementBySeven = makeIncrementer(forIncrement: 7)
+incrementBySeven() // returns 7
+
+incrementByTen() // returns 40
