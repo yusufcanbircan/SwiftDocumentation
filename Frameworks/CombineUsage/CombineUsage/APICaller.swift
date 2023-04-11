@@ -13,7 +13,7 @@ class APICaller {
     
     func fetchCompanies() -> Future<[String], Error> {
         return Future { promixe in
-            DispatchQueue.main.asyncAfter(deadline: .now()+3) {
+            DispatchQueue.main.async {
                 promixe(.success(["Apple", "Facebook", "Google", "Spotify"]))
             }
         }
