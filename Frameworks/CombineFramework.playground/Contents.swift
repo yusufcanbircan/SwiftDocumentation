@@ -119,8 +119,77 @@ authenticationManager.signOut()
 
 cancellable.cancel()
 
+/// handleEvents operator lets you to handle all the stages of the subscription lifecycle.
+///
+
+enum ExampleError: Swift.Error {
+    case somethingWentWrong
+}
+
+let relay1 = PassthroughSubject<String, ExampleError>()
+relay1
+    .handleEvents(receiveSubscription: { subscription in
+        print("new subscription \(subscription)")
+    }, receiveOutput: { value in
+        print("received new value \(value)")
+    }, receiveCompletion: { completion in
+        print("a subscription completion  \(completion)")
+    }, receiveCancel: {
+        print("a subscription cancelled")
+    })
+    .replaceError(with: "Failure")
+    .sink { value in
+        print("handleevent received value \(value)")
+    }
+
+relay1.send("GoodNews")
+relay1.send("newS")
+relay1.send(completion: .failure(.somethingWentWrong))
 
 
+/// Subscriptions returns Cancellable objects, it makes sure you are not retaining any referances.
+///
+
+class MyClass {
+    var cancellable: Cancellable? = nil
+    var variable: Int = 0 {
+        didSet {
+            print("MyClass object.variable = \(variable)")
+        }
+    }
+
+    init(subject: PassthroughSubject<Int,Never>) {
+        cancellable = subject.sink { value in
+            // the self is retaining cycle.
+            self.variable += value
+        }
+    }
+
+    deinit {
+        print("MyClass object deallocated")
+    }
+}
+
+func emitNextValue(from values: [Int], after delay: TimeInterval) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+        var array = values
+        subject.send(array.removeFirst())
+        if !array.isEmpty {
+            emitNextValue(from: array, after: delay)
+        }
+    }
+}
+
+let subject = PassthroughSubject<Int,Never>()
+var object: MyClass? = MyClass(subject: subject)
+
+emitNextValue(from: [1,2,3,4,5,6,7,8], after: 0.5)
+
+DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+    print("Nullify object")
+    object?.cancellable = nil
+    object = nil
+}
 
 
 
