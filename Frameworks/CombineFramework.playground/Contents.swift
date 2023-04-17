@@ -192,6 +192,44 @@ DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 }
 
 
+/// combine operators like .map, works like swift basic operators.
+///
+
+let operatorPublisher = PassthroughSubject<Int, Never>()
+
+let operatorPublisher1 = operatorPublisher.map { value in
+    value + 100
+}
+
+let operatorSubscription = operatorPublisher.sink { value in
+    print("Operator subscription value \(value)")
+}
+
+let operatorSubscription1 = operatorPublisher1.sink { value in
+    print("Operator subscription1 value \(value)")
+}
+
+operatorPublisher.send(15)
+operatorPublisher.send(10)
+
+operatorSubscription.cancel()
+operatorSubscription1.cancel()
+
+
+/// filter operation
+let operatorPublisher2 = operatorPublisher.filter {
+    ($0 % 2) == 0
+}
+
+let operatorSubscription2 = operatorPublisher2.sink { value in
+    print("Operator subscription2 value \(value)")
+}
+
+operatorPublisher.send(12)
+operatorPublisher.send(17)
+operatorPublisher.send(24)
+
+
 
 
 
