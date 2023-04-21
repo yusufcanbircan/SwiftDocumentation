@@ -230,6 +230,30 @@ operatorPublisher.send(17)
 operatorPublisher.send(24)
 
 
+/// a URLSessionTaskPublisher
+///
+
+struct DecodableExample: Decodable { }
+
+URLSession.shared.dataTaskPublisher(for: URL(string: "https://www.avanderlee.com/feed/")!)
+    .map { $0.data }
+    .decode(type: DecodableExample.self, decoder: JSONDecoder())
+
+/// a Notification Publisher
+///
+
+NotificationCenter.default.publisher(for: .NSCalendarDayChanged)
+
+/// KeyPath Binding to NSObject instance
+///
+
+let nameLabel = UILabel()
+Just("Yusuf")
+    .map{ "Name is \($0)" }
+    .assign(to: \.text, on: nameLabel)
+
+
+
 
 
 
